@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>CSS+JS Clock</title>
+
+    <style>
+        html{
+            background-image: url("http://unsplash.it/1500/1000?image=881&blur=50");
+            background-size: cover;
+            font-family: 'helvetica neue';
+            text-align: center;
+            font-size: 12px;
+        }
+
+        body{
+            margin: 0;
+            font-size: 2rem;
+            display: flex;
+            flex: 1;
+            min-height: 100vh;
+            align-items: center;
+        }
+
+        .clock{
+            width: 30rem;
+            height: 30rem;
+            border: 20px solid tomato;
+            border-radius: 50%;
+            position: relative;
+            padding: 2rem;
+            box-shadow: 
+                0 0 0 4px rgba(0,0,0,0.1),
+                inset 0 0 0 3px #EFEFEF,
+                inset 0 0 10px black,
+                0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .clock-face{
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform: translateY(-3px); /* the height of the clock hands*/
+        }
+
+        .hand{
+            width: 50%;
+            background: wheat;
+            position: absolute;
+            top: 50%;
+            transform-origin: 100%;  
+            transition: all 0.05s;
+            transition-timing-function: cubic-bezier(0.1, 2.7, 0.58, 1);          
+            transform: rotate(90deg);
+        }
+
+        /* change the heights of each hand */
+        .hour-hand{
+            height: 10px;
+        }
+
+        .min-hand{
+            height: 6px;
+        }
+
+        .second-hand{
+            height: 3px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="clock">
+        <div class="clock-face">
+            <div class="hand hand-trans hour-hand"></div>
+            <div class="hand hand-trans min-hand"></div>
+            <div class="hand hand-trans second-hand"></div>
+        </div>
+    </div>
+<script>
+    const secondHand = document.querySelector('.second-hand');
+    const minuteHand = document.querySelector('.min-hand');
+    const hourHand = document.querySelector('.hour-hand');
+    const allHands = document.querySelectorAll('.hand');
+    
+    function setDate(){
+        const now = new Date();
+        const seconds = now.getSeconds();
+        const minutes = now.getMinutes();
+        const hours = now.getHours();
+        const secondsDegrees = ((seconds/60) * 360) + 90;
+        const minutesDegrees = ((minutes/60) * 360) + 90;
+        const hoursDegrees = ((hours/12) * 360) + 90 + (minutes/60) * 30;
+        //remove glicht caused when hands get to 60sec/60min/12hrs
+        //This is because going from 450 degrees (60 seconds) to 90 
+        //degrees (0 seconds) causes the hand to go backwards
+        if(secondsDegrees === 90) {
+            allHands.forEach(hand => hand.style.transition = 'none')
+        } else {
+            allHands.forEach(hand => hand.style.transition = '')
+        }
+        secondHand.style.transform = `rotate(${secondsDegrees}deg)`;
+        minuteHand.style.transform = `rotate(${minutesDegrees}deg)`;
+        hourHand.style.transform = `rotate(${hoursDegrees}deg)`;
+    }
+
+    // make function run every second (ie every 1000ms)
+    setInterval(setDate, 1000);
+</script>
+</body>
+</html>
